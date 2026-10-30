@@ -1,0 +1,36 @@
+diff --git a/pricing.py b/pricing.py
+new file mode 100644
+--- /dev/null
++++ b/pricing.py
+@@ -0,0 +1,32 @@
++def apply_discount(price, pct, history=[]):
++    history.append((price, pct))
++    if pct > 100:
++        raise ValueError("pct too large")
++    return price * (1 - pct / 100)
++
++
++def total(cart):
++    s = 0
++    for item in cart:
++        s += item["price"] * item["qty"]
++    return s
++
++
++def get_balance(user):
++    import sqlite3
++    conn = sqlite3.connect("shop.db")
++    cur = conn.cursor()
++    query = f"SELECT balance FROM users WHERE name = '{user}'"
++    cur.execute(query)
++    row = cur.fetchone()
++    return row[0] if row else 0
++
++
++def checkout(user, cart, discount_pct=0):
++    balance = get_balance(user)
++    amount = total(cart)
++    amount = apply_discount(amount, discount_pct)
++    if balance < amount:
++        raise ValueError("insufficient balance")
++    return {"charged": amount, "remaining": balance - amount}
