@@ -1,9 +1,12 @@
 """Optional Gradio web UI for hosted demos. Run: python app.py (needs NEBIUS_API_KEY)."""
 import os
 
+import spaces
+
 from review_agent import agent as agent_mod
 
 
+@spaces.GPU  # required by Hugging Face ZeroGPU hosting; no-op elsewhere
 def review(diff_text, test_cmd, model):
     if not diff_text.strip():
         return "Paste a unified diff first."
